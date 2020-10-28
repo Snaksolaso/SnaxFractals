@@ -36,10 +36,12 @@ public class FractalColoring {
     }
 
 
+    //calculates the RGB value of the given pixel
     public int calcPixel(int i, int j){
         int rgb;
         int black = new Color(0, 0, 0).getRGB();
         int iter = set.calcPixel(i, j);
+
 
         double pix = iter * toAdd + toAdd;
         int pixint = (int)(pix % 510);
@@ -57,12 +59,19 @@ public class FractalColoring {
 
     }
 
-    public void drawFrame(BufferedImage toSlap){
+    public void drawFrame(BufferedImage toSlap, JLabel picLabel){
+
+        boolean[][] inSet = new boolean[width][height];
+
+
+
+
+
         for(int i = 0; i < width; i++){
             for(int j = 0; j < height; j++){
                 int color = calcPixel(i,j);
                 toSlap.setRGB(i,j, color);
-                System.out.println(color);
+                picLabel.repaint();
             }
         }
     }

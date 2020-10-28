@@ -22,25 +22,35 @@ public class FractalExplorer{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
-        //FracMouse mouse = new FracMouse(set);
-        //panel.addMouseListener(mouse);
-        //FracKey key = new FracKey(set);
-        //panel.addKeyListener(key);
+        Mandelbrot set = new Mandelbrot(width, height, -2.6666666666,2.6666666666,-1.5, 1.5,4000);
 
-        Mandelbrot set = new Mandelbrot(width, height, new BigDecimal( -2.6666666666), new BigDecimal(2.6666666666), new BigDecimal(-1.5), new BigDecimal(1.5),4000, 10);
-        FractalColoring frac = new FractalColoring(1920,1080, set, Math.pow(Math.E, 2));
+
+        FracMouse mouse = new FracMouse(set);
+        panel.addMouseListener(mouse);
+        FracKey key = new FracKey(set);
+        panel.addKeyListener(key);
+
+        FractalColoring frac = new FractalColoring(1920,1080, set, 4);
 
         System.out.println("Test");
         boolean toProcess = true;
         boolean running = true;
+
+        double zoomNum = set.zoomNum;
         while(running == true){
 
             if(toProcess){
-                frac.drawFrame(buf);
+                frac.drawFrame(buf, picLabel);
                 picLabel.repaint();
                 toProcess = false;
             }
-            picLabel.repaint();
+
+            System.out.print("");
+            if(zoomNum != set.zoomNum){
+                zoomNum = set.zoomNum;
+                toProcess = true;
+                System.out.print("Click!");
+            }
 
         }
     }

@@ -33,7 +33,7 @@ public class FracMouse implements MouseListener{
     @Override
     public void mouseClicked(MouseEvent e) {
         if(e.getButton() == 1){
-            //set.zoom(e.getX(),e.getY(), (double)1/8);
+            set.zoom(e.getX(),e.getY(), (double)1/8);
         }else if(e.getButton() == 2){
             set.maxIterations += 100;
             System.out.println(set.maxIterations);

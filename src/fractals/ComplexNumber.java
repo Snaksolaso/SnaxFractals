@@ -12,12 +12,9 @@ package fractals;
  * You may study, use, and modify it for any non-commercial purpose,
  * including teaching and use in open-source projects.
  * You may distribute it non-commercially as long as you retain this notice.
- * For a commercial use license, or to purchase the book, 
+ * For a commercial use license, or to purchase the book,
  * please visit http://www.davidflanagan.com/javaexamples3.
  */
-
-import java.math.BigDecimal;
-import java.math.MathContext;
 
 /**
  * This class represents complex numbers, and defines methods for performing
@@ -28,14 +25,12 @@ public class ComplexNumber {
   // two double values, known as x and y. They are private, so they are
   // not accessible from outside this class. Instead, they are available
   // through the real() and imaginary() methods below.
-  private BigDecimal x, y;
-  public MathContext mc;
+  private double x, y;
 
   /** This is the constructor. It initializes the x and y variables */
-  public ComplexNumber(BigDecimal real, BigDecimal imaginary, int precision) {
+  public ComplexNumber(double real, double imaginary) {
     this.x = real;
     this.y = imaginary;
-    this.mc = new MathContext(precision);
   }
 
   /**
@@ -43,19 +38,18 @@ public class ComplexNumber {
    * there is no setReal() method to set the real part. This means that the
    * ComplexNumber class is "immutable".
    */
-  public BigDecimal real() {
+  public double real() {
     return x;
   }
 
   /** An accessor method. Returns the imaginary part of the complex number */
-  public BigDecimal imaginary() {
+  public double imaginary() {
     return y;
   }
 
   /** Compute the magnitude of a complex number */
-  public BigDecimal magnitude() {
-
-    return x.multiply(x).add(y.multiply(y)).sqrt(mc);
+  public double magnitude() {
+    return Math.sqrt(x * x + y * y);
   }
 
   /**
@@ -68,10 +62,6 @@ public class ComplexNumber {
     return "{" + x + "," + y + "}";
   }
 
-  public MathContext getMathContext(){
-    return mc;
-  }
-
   /**
    * This is a static class method. It takes two complex numbers, adds them, and
    * returns the result as a third number. Because it is static, there is no
@@ -79,7 +69,7 @@ public class ComplexNumber {
    * ComplexNumber.add(a, b);
    */
   public static ComplexNumber add(ComplexNumber a, ComplexNumber b) {
-    return new ComplexNumber(b.x.add(a.x), b.y.add(a.y), a.mc.getPrecision());
+    return new ComplexNumber(a.x + b.x, a.y + b.y);
   }
 
   /**
@@ -88,16 +78,16 @@ public class ComplexNumber {
    * ComplexNumber c = a.add(b);
    */
   public ComplexNumber add(ComplexNumber a) {
-    return new ComplexNumber(this.x.add(a.x), this.y.add(a.y), mc.getPrecision());
+    return new ComplexNumber(this.x + a.x, this.y + a.y);
   }
 
   /** A static class method to multiply complex numbers */
   public static ComplexNumber multiply(ComplexNumber a, ComplexNumber b) {
-    return new ComplexNumber(a.x.multiply(b.x).subtract(a.y.multiply(b.y)), a.x.multiply(b.y).add(a.y.multiply(b.x)), a.mc.getPrecision());
+    return new ComplexNumber(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
   }
 
   /** An instance method to multiply complex numbers */
   public ComplexNumber multiply(ComplexNumber a) {
-    return new ComplexNumber(x.multiply(a.x).subtract(y.multiply(a.y)), x.multiply(a.y).add(y.multiply(a.x)), mc.getPrecision());
+    return new ComplexNumber(x * a.x - y * a.y, x * a.y + y * a.x);
   }
 }
