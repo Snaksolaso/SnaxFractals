@@ -16,6 +16,8 @@
 
 package fractals;
 
+import java.awt.*;
+
 /**
  *
  * @author Snaxolas
@@ -29,6 +31,11 @@ public class RGB {
         this.g = g;
         this.b = b;
     }
+    public RGB(Color color){
+        r = color.getRed();
+        g = color.getGreen();
+        b = color.getBlue();
+    }
     public int getR(){
         return r;
     }
@@ -37,6 +44,10 @@ public class RGB {
     }
     public int getB(){
         return b;
+    }
+
+    public boolean isBlack(){
+        return (r == 0 && g == 0 && b == 0);
     }
     
 }
