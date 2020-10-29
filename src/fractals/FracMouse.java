@@ -23,25 +23,21 @@ import java.awt.event.MouseListener;
  */
 public class FracMouse implements MouseListener{
     
-    Mandelbrot set;
+    FractalSet set1;
+    FractalSet set2;
 
-    public FracMouse(Mandelbrot set){
+    public FracMouse(FractalSet set1, FractalSet set2){
         super();
-        this.set = set;
+        this.set1 = set1;
+        this.set2 = set2;
     }
     
     @Override
     public void mouseClicked(MouseEvent e) {
         if(e.getButton() == 1){
-            set.zoom(e.getX(),e.getY(), (double)1/8);
-        }else if(e.getButton() == 2){
-            set.maxIterations += 100;
-            System.out.println(set.maxIterations);
-        }else if(e.getButton() == 3){
-            set.maxIterations -= 100;
-            System.out.println(set.maxIterations);
+            set1.zoom(e.getX(),e.getY(), (double)1/8);
+            set2.zoom(e.getX(),e.getY(), (double)1/8);
         }
-        
     }
 
 

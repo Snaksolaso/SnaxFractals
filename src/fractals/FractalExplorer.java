@@ -6,9 +6,53 @@ import java.math.BigDecimal;
 public class FractalExplorer{
 
     public static void main(String[] args){
-
-        int height = 1080;
         int width = 1920;
+        int height = 1080;
+        int iterations = 4000;
+        int funky = 0;
+
+        if(args.length != 0){
+            if(args.length >= 2) {
+                try {
+                    if (Integer.parseInt(args[0]) > 0 && Integer.parseInt(args[1]) > 0) {
+                        width = Integer.parseInt(args[0]);
+                        height = Integer.parseInt(args[1]);
+                    } else {
+                        System.out.println("Resolution width and height must both be above 0!");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("First two arguments are resolution width and height, respectively! Integers only!");
+                }
+            }if(args.length >= 3) {
+                try {
+                    if(Integer.parseInt(args[2]) > 0){
+                        iterations = Integer.parseInt(args[2]);
+                    }else{
+                        System.out.println("Iteration number must be above 0!");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Third argument must be number of iterations! Integers only!");
+
+                }
+            }if(args.length >= 4) {
+                try {
+                    if(Integer.parseInt(args[3]) > 0){
+                        funky = Integer.parseInt(args[3]);
+                    }else{
+                        System.out.println("Funky number must be above 0!");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Fourth argument must be funky! Integers only!");
+
+                }
+            }
+
+        }
+
+
+
+
+
 
         //sets up a new BufferedImage to be edited
         BufferedImage buf = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
@@ -22,35 +66,35 @@ public class FractalExplorer{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
-        Mandelbrot set = new Mandelbrot(width, height, -2.6666666666,2.6666666666,-1.5, 1.5,4000);
+        FractalSet set1 = new MandelbrotSimple(width, height, -2.66666666,2.6666666,-1.5, 1.5,iterations);
+        FractalSet set2 = new Mandelbrot(width, height, -2.66666666,2.6666666,-1.5, 1.5,iterations);
 
 
-        FracMouse mouse = new FracMouse(set);
+        FracMouse mouse = new FracMouse(set1,set2);
         panel.addMouseListener(mouse);
-        FracKey key = new FracKey(set);
-        panel.addKeyListener(key);
 
-        FractalColoring frac = new FractalColoring(1920,1080, set, 4);
+        FractalColoring frac = new FractalColoring(width,height, set1, set2, 1, funky);
 
         System.out.println("Test");
         boolean toProcess = true;
         boolean running = true;
 
-        double zoomNum = set.zoomNum;
+        double zoomNum = set1.getZoomNum();
         while(running == true){
 
             if(toProcess){
-                frac.drawFrame(buf, picLabel);
+                frac.drawFrame(buf, picLabel, 8, 50, 50,20);
                 picLabel.repaint();
                 toProcess = false;
             }
 
             System.out.print("");
-            if(zoomNum != set.zoomNum){
-                zoomNum = set.zoomNum;
+            if(zoomNum != set1.getZoomNum()){
+                zoomNum = set1.getZoomNum();
                 toProcess = true;
-                System.out.print("Click!");
             }
+
+            picLabel.repaint();
 
         }
     }

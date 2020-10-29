@@ -10,15 +10,15 @@ package fractals;
  *
  * @author Nikolas
  */
-public class Mandelbrot {
+public class Mandelbrot implements FractalSet{
 
 
     int pixWidth;
     int pixHeight;
-    double realStart;
-    double realEnd;
-    double iStart;
-    double iEnd;
+    DoubleDouble realStart;
+    DoubleDouble realEnd;
+    DoubleDouble iStart;
+    DoubleDouble iEnd;
     int maxIterations;
     double toAdd;
     int zoomNum;
@@ -26,32 +26,43 @@ public class Mandelbrot {
     public Mandelbrot(int ipixWidth, int ipixHeight, double irealStart, double irealEnd, double iiStart, double iiEnd, int maxIterations){
         this.pixWidth = ipixWidth;
         this.pixHeight = ipixHeight;
-        this.realStart = irealStart;
-        this.realEnd = irealEnd;
-        this.iStart = iiStart;
-        this.iEnd = iiEnd;
+        this.realStart = new DoubleDouble(irealStart);
+        this.realEnd = new DoubleDouble(irealEnd);
+        this.iStart = new DoubleDouble(iiStart);
+        this.iEnd = new DoubleDouble(iiEnd);
         this.maxIterations = maxIterations;
         zoomNum = 0;
     }
 
-
-
-    public double scaleX(int x){
-        return this.realStart + ((double)x / (double)this.pixWidth) * (this.realEnd - this.realStart);
+    public int getZoomNum() {
+        return zoomNum;
     }
-    public double scaleY(int y){
-        return this.iStart + ((double)y / (double)this.pixHeight) * (this.iEnd - this.iStart);
+
+    @Override
+    public int getMaxIterations() {
+        return maxIterations;
+    }
+
+
+    public DoubleDouble scaleX(int x){
+        //return this.realStart + ((double)x / (double)this.pixWidth) * (this.realEnd - this.realStart);
+        return realStart.add((new DoubleDouble((double)x / pixWidth).multiply(realEnd.subtract(realStart))));
+    }
+    public DoubleDouble scaleY(int y){
+        //return this.iStart + ((double)y / (double)this.pixHeight) * (this.iEnd - this.iStart);
+
+        return iStart.add((new DoubleDouble((double)y / pixHeight).multiply(iEnd.subtract(iStart))));
     }
 
     public int calcPixel(int x,int y){
-        double cI = scaleY(y);
-        double cR = scaleX(x);
-        double zI = 0;
-        double zR = 0;
-        double zrSqr = 0;
-        double ziSqr = 0;
+        DoubleDouble cI = scaleY(y);
+        DoubleDouble cR = scaleX(x);
+        DoubleDouble zI = new DoubleDouble(0);
+        DoubleDouble zR = new DoubleDouble(0);
+        DoubleDouble zrSqr = new DoubleDouble(0);
+        DoubleDouble ziSqr = new DoubleDouble(0);
         int iteration = 0;
-        while(zrSqr + ziSqr <= 4 && iteration < maxIterations){
+        while(zrSqr.add(ziSqr).compareTo(new DoubleDouble(4)) < 0 && iteration < maxIterations){
 
             /*
 
@@ -69,63 +80,59 @@ public class Mandelbrot {
                 zisqr = square(z.i);
              }
              */
+
+            /*
             zI = zR * zI;
             zI += zI;
             zI += cI;
             zR = zrSqr - ziSqr + cR;
             zrSqr = zR * zR;
             ziSqr = zI * zI;
+             */
+
+            zI = zR.multiply(zI);
+            zI = zI.add(zI);
+            zI = zI.add(cI);
+            zR = zrSqr.subtract(ziSqr).add(cR);
+            zrSqr = zR.multiply(zR);
+            ziSqr = zI.multiply(zI);
 
             iteration++;
         }
         return iteration;
     }
 
-    public void zoom(int x, int y,double ratio){
-        double comRealWidth = this.realEnd - this.realStart;
-        double comIHeight = this.iEnd - this.iStart;
 
-        double comOldRealCenter = this.realStart + comRealWidth/2;
-        double comOldICenter = this.iStart + comIHeight/2;
-        double comRectRealWidth = comRealWidth*ratio;
-        double comRectIHeight = comIHeight*ratio;
-        double comRealCoord = (comRealWidth * ((double)x/pixWidth)) - comRealWidth/2 - comRectRealWidth/2 + comOldRealCenter;
-        double comICoord = (comIHeight * ((double)y/pixHeight)) - comIHeight/2 - comRectIHeight/2 + comOldICenter;
+
+    //zooms the set's boundaries based on the ratio and pixel given
+    public void zoom(int x, int y,double ratio){
+        DoubleDouble ratioDD = new DoubleDouble(ratio);
+
+        DoubleDouble comRealWidth = this.realEnd.subtract(realStart);
+        DoubleDouble comIHeight = this.iEnd.subtract(iStart);
+
+        DoubleDouble two = new DoubleDouble(2);
+
+        DoubleDouble comOldRealCenter = this.realStart.add(comRealWidth.divide(two));
+        DoubleDouble comOldICenter = this.iStart.add(comIHeight.divide(two));
+        DoubleDouble comRectRealWidth = comRealWidth.multiply(ratioDD);
+        DoubleDouble comRectIHeight = comIHeight.multiply(ratioDD);
+
+        DoubleDouble comRealCoord = comRealWidth.multiply(new DoubleDouble(((double)x/pixWidth))).subtract(comRealWidth.divide(two)).subtract(comRectRealWidth.divide(two)).add(comOldRealCenter);
+        DoubleDouble comICoord = comIHeight.multiply(new DoubleDouble(((double)y/pixHeight))).subtract(comIHeight.divide(two)).subtract(comRectIHeight.divide(two)).add(comOldICenter);
 
         this.realStart = comRealCoord;
-        this.realEnd = comRealCoord + comRectRealWidth;
+        this.realEnd = comRealCoord.add(comRectRealWidth);
         this.iStart = comICoord;
-        this.iEnd = comICoord + comRectIHeight;
+        this.iEnd = comICoord.add(comRectIHeight);
         this.zoomNum = zoomNum + 1;
 
 
-        System.out.println(realStart-realEnd);
+        System.out.println(realStart.subtract(realEnd));
 
     }
 }
 
-
-    //zooms the set's bounds towards the screen pixels x and y, by the ratio specified NEEDS TO BE UPDATED TO BIGDECIMAL
-    /*public void zoom(int x, int y,double ratio){
-        double comRealWidth = this.realEnd - this.realStart;
-        double comIHeight = this.iEnd - this.iStart;
-        System.out.println((double)x/pixWidth);
-        
-        double comOldRealCenter = this.realStart + comRealWidth/2;
-        double comOldICenter = this.iStart + comIHeight/2;
-        double comRectRealWidth = comRealWidth*ratio;
-        double comRectIHeight = comIHeight*ratio;
-        double comRealCoord = (comRealWidth * ((double)x/pixWidth)) - comRealWidth/2 - comRectRealWidth/2 + comOldRealCenter;
-        double comICoord = (comIHeight * ((double)y/pixHeight)) - comIHeight/2 - comRectIHeight/2 + comOldICenter;
-        
-        this.realStart = comRealCoord;
-        this.realEnd = comRealCoord + comRectRealWidth;
-        this.iStart = comICoord;
-        this.iEnd = comICoord + comRectIHeight;
-        this.zoomNum = zoomNum + 1;
-        System.out.println(zoomNum);
-        
-    }*/
 
 
 /*class juliaSet:
